@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Contact</title>
+    <script>
+        function addField(containerId, inputName) {
+            let container = document.getElementById(containerId);
+            let newInput = document.createElement("input");
+            newInput.type = inputName === "emails" ? "email" : "tel";
+            newInput.name = inputName;
+            newInput.required = true;
+            container.appendChild(newInput);
+        }
+    </script>
+</head>
+<body>
+
+<h2>Edit Contact</h2>
+
+<th:block th:if="${contact.resourceName}">
+    <form th:action="@{/contacts/edit}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <input type="hidden" name="id" th:value="${#uris.escapePath(contact.resourceName)}" />
+        <input type="hidden" name="etag" th:value="${contact.etag}" />
+
+        <label>Name:</label>
+        <input type="text" name="name" th:value="${contact.name}" required><br>
+
+        <label>Emails:</label>
+        <div id="email-container">
+            <th:block th:each="email : ${contact.emails}">
+                <input type="email" name="emails" th:value="${email}" required>
+            </th:block>
+        </div>
+        <button type="button" onclick="addField('email-container', 'emails')">+ Add Email</button>
+        <br>
+
+        <label>Phone Numbers:</label>
+        <div id="phone-container">
+            <th:block th:each="phone : ${contact.phoneNumbers}">
+                <input type="tel" name="phoneNumbers" th:value="${phone}" required>
+            </th:block>
+        </div>
+        <button type="button" onclick="addField('phone-container', 'phoneNumbers')">+ Add Phone</button>
+        <br>
+
+        <button type="submit" onclick="return confirm('Save changes?')">Update Contact</button>
+    </form>
+</th:block>
+
+</body>
+</html>
